@@ -7,10 +7,7 @@ class Capybara::Driver::Zombie < Capybara::Driver::Base
     include Capybara::Zombie::Helpers
 
     def visible?
-      # Use the same XPATH selector as the RackTestDriver:
-      # https://github.com/jnicklas/capybara/blob/0.4.0/lib/capybara/driver/rack_test_driver.rb#L85
-      selector = "'./ancestor-or-self::*[contains(@style, \\'display:none\\') or contains(@style, \\'display:none\\')]'"
-      socket_send("stream.end(browser.xpath(#{selector}, #{native_ref}).value.length.toString());").to_i.zero?
+      find("./ancestor-or-self::*[contains(@style, 'display:none') or contains(@style, 'display: none')]").empty?
     end
 
     def [](name)
