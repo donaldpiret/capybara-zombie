@@ -139,12 +139,37 @@ if(tagName == "TEXTAREA") {
   end
 
   attr_reader :app, :rack_server, :options
+  
+  class << self
+    attr_accessor :pid
+  end
 
   def initialize(app, options={})
     @app = app
     @options = options
     @rack_server = Capybara::Server.new(@app)
     @rack_server.boot if Capybara.run_server
+    
+    unless self.class.pid
+      self.class.pid = Process.fork
+      if self.class.pid.nil?
+        puts "starting zombie..."
+        exec "env node #{File.expand_path(File.dirname(__FILE__))}/../zombie/executer.js"
+        Process.exit!(true)
+      else
+        Process.detach(self.class.pid)
+        sleep 0.5
+      end
+    end
+    
+    at_exit do
+      if self.class.pid
+        puts "killing zombie..."
+        Process.kill(9, self.class.pid)
+        self.class.pid = nil
+        sleep 0.5
+      end
+    end
   end
 
   def visit(path)
