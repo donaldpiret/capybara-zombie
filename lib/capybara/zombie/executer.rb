@@ -6,7 +6,7 @@ module Capybara
       
       def animate!
         unless self.process
-          # puts "starting zombie..."
+          puts "starting zombie..."
           self.process = ChildProcess.new("env node #{executer_path}")
           self.process.start
           sleep 0.5
@@ -16,7 +16,7 @@ module Capybara
       
       def kill
         if self.process
-          # puts "killing zombie..."
+          puts "killing zombie..."
           self.process.stop if self.process.alive?
           self.process = nil
           sleep 0.5
